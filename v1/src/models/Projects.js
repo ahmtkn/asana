@@ -4,10 +4,10 @@ const {level} = require("winston");
 
 const ProjectSchema = new Mongoose.Schema({
     name: String,
-/*    user_id: {
+    user_id: {
         type: Mongoose.Types.ObjectId,
         ref: "user"
-    }*/
+    }
 },{timestamps: true, versionKey: false})
 
 ProjectSchema.post('save', (doc) => {

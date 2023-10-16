@@ -7,7 +7,7 @@ const authenticateToken = (req, res, next) => {
 
     JWT.verify(token,process.env.ACCESS_TOKEN_SECRET_KEY, (err, user) => {
         if (err) res.status(httpStatus.FORBIDDEN).send({ error: err });
-        req.user = user;
+        req.user = user._doc;
         next()
     })
 }

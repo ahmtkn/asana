@@ -16,6 +16,8 @@
     "joi": "^17.10.2",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^7.5.2",
+    "nodemailer": "^6.9.6",
+    "uuid": "^9.0.1",
     "winston": "^3.10.0"
   },
   "devDependencies": {
