@@ -15,9 +15,14 @@ const modify = (where, data) => {
     return Project.findOneAndUpdate(where, data, {new: true})
 }
 
+const destroy = (where) => {
+    return Project.findOneAndRemove(where)
+}
+
 
 module.exports = {
     insert,
     list,
-    modify
+    modify,
+    destroy
 }

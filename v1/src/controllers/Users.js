@@ -4,6 +4,7 @@ const {passwordToHash, getAccessToken, generateAccessToken, generateRefreshToken
 const uuid = require("uuid");
 const eventEmitter = require('../scripts/events/eventEmitter');
 const projectService = require("../services/Projects");
+const path = require("path");
 
 const index = (req, res) => {
     const event = require('events');
@@ -71,11 +72,48 @@ const resetPassword = (req, res) => {
 
 }
 
+const destroy = (req, res) => {
+    service.destroy({"_id": req.params.id}).then((response) => {
+        if (!response) return res.status(httpStatus.NOT_FOUND).send({message: "kullanıcı bulunamadı"});
+        res.status(httpStatus.OK).send({message: "kullanıcı başarıyla silindi"});
+    }).catch(() => res.status(httpStatus.INTERNAL_SERVER_ERROR).send({message: "kullanıcı silinirken bir hata oluştu"}));
+}
+
+const changePassword = (req, res) => {
+    if (req.body.password) req.body.password = passwordToHash(req.body.password);
+    service.modify({'_id': req.user._id}, req.body).then((response) => {
+        req.user = response;
+        res.status(httpStatus.OK).send(response);
+    }).catch((e) => {
+        res.status(httpStatus.INTERNAL_SERVER_ERROR).send(e);
+    });
+}
+
+const updateProfileImage = (req, res) => {
+    if (!req?.files?.profile_image) {
+        return res.status(httpStatus.BAD_REQUEST).send({"error": "Bu işlemi yapabilmek için yeterli veriye sahip değilsiniz"});
+    }
+    const extension = path.extname(req?.files?.profile_image.name);
+    const fileName = `${req?.user?._id}${extension}`;
+    const folderPath = path.join(__dirname, "../uploads/users", fileName);
+    req.files.profile_image.mv(folderPath, function (err) {
+        if (err) return res.status(httpStatus.INTERNAL_SERVER_ERROR).send({"error": err});
+        service.modify({"_id": req?.user?._id}, {"profile_image": fileName}).then((response) => {
+            return res.status(httpStatus.OK).send(response);
+        }).catch((e) => {
+            return res.status(httpStatus.INTERNAL_SERVER_ERROR).send({"message": "Upload başarılı fakat kayıt sırasında bir sorun oluştu."});
+        });
+    });
+}
+
 module.exports = {
     index,
     create,
     update,
     login,
     projectList,
-    resetPassword
+    resetPassword,
+    destroy,
+    changePassword,
+    updateProfileImage
 }

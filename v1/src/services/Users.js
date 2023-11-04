@@ -17,10 +17,15 @@ const modify = (where, data) => {
     return User.findOneAndUpdate(where, data, {new: true});
 }
 
+const destroy = (where) => {
+    return User.findOneAndRemove(where);
+}
+
 
 module.exports = {
     list,
     find,
     insert,
-    modify
+    modify,
+    destroy
 }
